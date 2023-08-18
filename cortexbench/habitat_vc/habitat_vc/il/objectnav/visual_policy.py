@@ -26,6 +26,38 @@ from habitat_vc.il.objectnav.policy import ILPolicy
 from habitat_vc.models.freeze_batchnorm import convert_frozen_batchnorm
 
 
+@custom_baseline_registry.register_il_policy
+class ObjectNavILPolicy(ILPolicy):
+    def __init__(
+        self,
+        observation_space: Space,
+        action_space: Space,
+        backbone_config: Config,
+        model_config: Config,
+        run_type: str,
+    ):
+        super().__init__(
+            ObjectNavILNet(
+                observation_space=observation_space,
+                model_config=model_config,
+                backbone_config=backbone_config,
+                num_actions=action_space.n,
+                run_type=run_type,
+            ),
+            action_space.n,
+        )
+
+    @classmethod
+    def from_config(cls, config: Config, observation_space, action_space):
+        return cls(
+            observation_space=observation_space,
+            action_space=action_space,
+            backbone_config=config.model,
+            model_config=config.MODEL,
+            run_type=config.RUN_TYPE,
+        )
+
+
 class ObjectNavILNet(Net):
     r"""A baseline sequence to sequence network that concatenates instruction,
     RGB, and depth encodings before decoding an action distribution with an RNN.
@@ -210,35 +242,3 @@ class ObjectNavILNet(Net):
         x, rnn_hidden_states = self.state_encoder(x, rnn_hidden_states, masks)
 
         return x, rnn_hidden_states
-
-
-@custom_baseline_registry.register_il_policy
-class ObjectNavILPolicy(ILPolicy):
-    def __init__(
-        self,
-        observation_space: Space,
-        action_space: Space,
-        backbone_config: Config,
-        model_config: Config,
-        run_type: str,
-    ):
-        super().__init__(
-            ObjectNavILNet(
-                observation_space=observation_space,
-                model_config=model_config,
-                backbone_config=backbone_config,
-                num_actions=action_space.n,
-                run_type=run_type,
-            ),
-            action_space.n,
-        )
-
-    @classmethod
-    def from_config(cls, config: Config, observation_space, action_space):
-        return cls(
-            observation_space=observation_space,
-            action_space=action_space,
-            backbone_config=config.model,
-            model_config=config.MODEL,
-            run_type=config.RUN_TYPE,
-        )

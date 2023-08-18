@@ -34,4 +34,7 @@ def create_compression_layer(
     )
     output_size = np.prod(output_shape)
 
+    # Final output shape should represent the shape of the final tensor output after compression
+    output_size = (output_size,)
+
     return compression, output_shape, output_size

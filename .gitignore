@@ -4,6 +4,9 @@ outputs/
 multirun/
 .vscode/
 
+# Model checkpoints
+vc_models/src/model_ckpts/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
